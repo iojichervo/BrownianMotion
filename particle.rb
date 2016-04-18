@@ -3,8 +3,8 @@
 require 'set'
 
 class Particle
-  attr_reader :id, :color, :radius, :neighbors, :vx, :vy
-  attr_accessor :position
+  attr_reader :id, :color, :radius, :neighbors, :mass
+  attr_accessor :position, :vx, :vy
 
   @@ids = 0
 

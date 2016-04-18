@@ -76,4 +76,5 @@ raise ArgumentError, "The amount of particles must be bigger than zero" if N <= 
 particles = generate_particles
 state(RIGHT_WALL, 4, 0.001, N, particles)
 
-puts next_collision(particles).time
+nc = next_collision(particles)
+nc.collide

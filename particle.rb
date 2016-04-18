@@ -18,6 +18,7 @@ class Particle
     @vx = vx
     @vy = vy
     @neighbors = Set.new
+    @collisions = []
   end
 
   def eql?(other)
@@ -52,5 +53,16 @@ class Particle
     x = @position.x + @vx * time
     y = @position.y + @vy * time
     @position = Point.new(x, y)
+  end
+
+  def add_collision(c)
+    @collisions.push(c)
+  end
+
+  def clear_collisions
+    @collisions.each do |c|
+      c.invalidate
+    end
+    @collisions.clear
   end
 end

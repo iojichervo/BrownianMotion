@@ -4,9 +4,11 @@ require 'pp'
 require './initial_state.rb'
 require './cim.rb'
 require './collision.rb'
+require './pqueue.rb'
+
+$actual_time = 0
 
 def next_collision(particles)
-  nc = nil
   particles.each do |particle|
     # Next collision of particle in x
     if particle.vx > 0 then
@@ -16,7 +18,11 @@ def next_collision(particles)
     else
       tncx = nil
     end
-    ncx = HorizontalCollision.new(particle, tncx)
+    if tncx != nil then
+      ncx = HorizontalCollision.new(particle, $actual_time + tncx)
+      PQUEUE.push(ncx)
+      particle.add_collision(ncx)
+    end
 
     # Next collision of particle in y
     if particle.vy > 0 then
@@ -26,7 +32,11 @@ def next_collision(particles)
     else
       tncy = nil
     end
-    ncy = VerticalCollision.new(particle, tncy)
+    if tncy != nil then
+      ncy = VerticalCollision.new(particle, $actual_time + tncy)
+      PQUEUE.push(ncy)
+      particle.add_collision(ncy)
+    end
 
     # Next collision of particle with other particle
     ncp = nil
@@ -39,14 +49,13 @@ def next_collision(particles)
 
       if △v△r < 0 && d >= 0 then
         tncp = - (△v△r + Math.sqrt(d)) / △v△v
-        ncp = Collision.new(particle, neighbor, tncp) if ncp == nil || tncp < ncp.time
+        ncp = Collision.new(particle, neighbor, $actual_time + tncp)
+        PQUEUE.push(ncp)
+        particle.add_collision(ncp)
+        neighbor.add_collision(ncp)
       end
     end
-
-    # Next collision
-    nc = min_time_collisions(nc, ncx, ncy, ncp)
   end
-  return nc
 end
 
 def min_time_collisions(*collisions)
@@ -91,31 +100,42 @@ BIG_PARTICLE_MASS = 100
 # Particles amount
 #N = ARGV[0].to_i
 N = 10
-T = 15
+FRAMES = 100
 raise ArgumentError, "The amount of particles must be bigger than zero" if N <= 0
 
+PQUEUE = PQueue.new(nil){ |a,b| a.time < b.time }
+
 i = 0
+△t = 0.1
+
 particles = generate_particles
 state = state(RIGHT_WALL, 4, 0.001, N, particles)
 print_next_state(state, 'w', i)
 
-actual_time = 0
-△t = 0.1
-while actual_time <= T do
-  nc = next_collision(particles)
+next_collision(particles)
+while i <= FRAMES do
+  loop do
+    nc = PQUEUE.pop
+    break if nc.is_valid
+  end
 
-  if nc.time <= △t then
-    nc.collide
-
-  else
+  while $actual_time < nc.time do
     move(particles, △t)
-    actual_time += △t
+    $actual_time += △t
 
     i += 1
     print_next_state(state, 'a', i) 
   end
 
+  nc.collide
+
   state.grid = {}
   align_grid(state)
   cell_index_method(state, 0.001, false)
+
+  next_collision(nc.particles)
+
+  nc.particles.each do |p|
+    p.clear_collisions
+  end
 end

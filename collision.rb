@@ -7,6 +7,7 @@ class Collision
     @particle = particle
     @other_particle = other_particle
     @time = time
+    @is_valid = true
   end
 
   def collide
@@ -24,6 +25,18 @@ class Collision
     other_particle.vx -= jx / other_particle.mass
     other_particle.vy -= jy / other_particle.mass
   end
+
+  def particles
+    [particle, other_particle]
+  end
+
+  def is_valid
+    is_valid
+  end
+
+  def invalidate
+    is_invalid = false
+  end
 end
 
 class HorizontalCollision < Collision
@@ -34,6 +47,10 @@ class HorizontalCollision < Collision
   def collide
     @particle.vx *= -1
   end
+
+  def particles
+    [particle]
+  end
 end
 
 class VerticalCollision < Collision
@@ -43,5 +60,9 @@ class VerticalCollision < Collision
 
   def collide
     @particle.vy *= -1
+  end
+
+  def particles
+    [particle]
   end
 end

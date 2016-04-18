@@ -107,9 +107,6 @@ while actual_time <= T do
   if nc.time <= △t then
     nc.collide
 
-    state.grid = {}
-    align_grid(state)
-    cell_index_method(state, 0.001, false)
   else
     move(particles, △t)
     actual_time += △t
@@ -118,4 +115,7 @@ while actual_time <= T do
     print_next_state(state, 'a', i) 
   end
 
+  state.grid = {}
+  align_grid(state)
+  cell_index_method(state, 0.001, false)
 end

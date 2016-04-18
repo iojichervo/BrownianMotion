@@ -3,21 +3,21 @@
 require 'set'
 
 class Particle
-  attr_reader :id, :color, :radius, :neighbors
+  attr_reader :id, :color, :radius, :neighbors, :vx, :vy
   attr_accessor :position
 
   @@ids = 0
 
   def initialize(radius, mass, position, vx, vy)
-      @@ids += 1
-      @id = @@ids
-      @radius = radius
-      @color = nil
-      @mass = mass
-      @position = position
-      @vx = vx
-      @vy = vy      
-      @neighbors = Set.new
+    @@ids += 1
+    @id = @@ids
+    @radius = radius
+    @color = nil
+    @mass = mass
+    @position = position
+    @vx = vx
+    @vy = vy
+    @neighbors = Set.new
   end
 
   def eql?(other)

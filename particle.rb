@@ -33,11 +33,11 @@ class Particle
   end
 
   def x
-    position.x
+    @position.x
   end
 
   def y
-    position.y
+    @position.y
   end
 
   def add_neighbor(particle)
@@ -46,5 +46,11 @@ class Particle
 
   def reset_neighbors
     @neighbors = Set.new
+  end
+
+  def move(time)
+    x = @position.x + @vx * time
+    y = @position.y + @vy * time
+    @position = Point.new(x, y)
   end
 end

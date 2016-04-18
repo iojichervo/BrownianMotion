@@ -58,6 +58,26 @@ def min_time_collisions(*collisions)
   return min
 end
 
+def move(particles, time)
+  particles.each do |p|
+    p.move(time)
+  end
+end
+
+def print_next_state(state, mode, second)
+  file = File.open("particles.txt", mode)
+  file.write("#{N + 1}\n")
+  file.write("#{second}\n")
+  state.particles.each do |particle|
+    file.write("#{particle.x} #{particle.y} #{particle.vx} #{particle.vy} #{particle.radius}\n")
+  end
+  #file.write("#{LEFT_WALL} #{FLOOR_WALL} 0 0 0\n")
+  #file.write("#{LEFT_WALL} #{ROOF_WALL} 0 0 0\n")
+  #file.write("#{RIGHT_WALL} #{FLOOR_WALL} 0 0 0\n")
+  #file.write("#{RIGHT_WALL} #{ROOF_WALL} 0 0 0\n")
+  file.close
+end
+
 # Constants
 ROOF_WALL = 0.5
 RIGHT_WALL = 0.5
@@ -71,10 +91,31 @@ BIG_PARTICLE_MASS = 100
 # Particles amount
 #N = ARGV[0].to_i
 N = 10
+T = 15
 raise ArgumentError, "The amount of particles must be bigger than zero" if N <= 0
 
+i = 0
 particles = generate_particles
-state(RIGHT_WALL, 4, 0.001, N, particles)
+state = state(RIGHT_WALL, 4, 0.001, N, particles)
+print_next_state(state, 'w', i)
 
-nc = next_collision(particles)
-nc.collide
+actual_time = 0
+△t = 0.1
+while actual_time <= T do
+  nc = next_collision(particles)
+
+  if nc.time <= △t then
+    nc.collide
+
+    state.grid = {}
+    align_grid(state)
+    cell_index_method(state, 0.001, false)
+  else
+    move(particles, △t)
+    actual_time += △t
+
+    i += 1
+    print_next_state(state, 'a', i) 
+  end
+
+end

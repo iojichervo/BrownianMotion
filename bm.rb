@@ -68,15 +68,15 @@ end
 
 def print_next_state(particles, mode, second)
   file = File.open("particles.txt", mode)
-  file.write("#{N + 1}\n")
+  file.write("#{N + 1 + 4}\n")
   file.write("#{second}\n")
   particles.each do |particle|
     file.write("#{particle.x} #{particle.y} #{particle.vx} #{particle.vy} #{particle.radius}\n")
   end
-  #file.write("#{LEFT_WALL} #{FLOOR_WALL} 0 0 0\n")
-  #file.write("#{LEFT_WALL} #{ROOF_WALL} 0 0 0\n")
-  #file.write("#{RIGHT_WALL} #{FLOOR_WALL} 0 0 0\n")
-  #file.write("#{RIGHT_WALL} #{ROOF_WALL} 0 0 0\n")
+  file.write("#{LEFT_WALL} #{FLOOR_WALL} 0 0 0\n")
+  file.write("#{LEFT_WALL} #{ROOF_WALL} 0 0 0\n")
+  file.write("#{RIGHT_WALL} #{FLOOR_WALL} 0 0 0\n")
+  file.write("#{RIGHT_WALL} #{ROOF_WALL} 0 0 0\n")
   file.close
 end
 

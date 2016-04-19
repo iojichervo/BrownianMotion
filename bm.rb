@@ -5,6 +5,7 @@ require './initial_state.rb'
 require './cim.rb'
 require './collision.rb'
 
+# Returns the next collision between the particles
 def next_collision(particles)
   nc = nil
   particles.each do |particle|
@@ -40,7 +41,7 @@ def next_collision(particles)
 
         if △v△r < 0 && d >= 0 then
           tncp = - (△v△r + Math.sqrt(d)) / △v△v
-          ncp = Collision.new(particle, neighbor, tncp) if ncp == nil || tncp < ncp.time
+          ncp = ParticlesCollision.new(particle, neighbor, tncp) if ncp == nil || tncp < ncp.time
         end
       end
     end
@@ -51,6 +52,7 @@ def next_collision(particles)
   return nc
 end
 
+# Returns the collision with the minimum time
 def min_time_collisions(*collisions)
   min = nil
   collisions.each do |c|
@@ -60,15 +62,17 @@ def min_time_collisions(*collisions)
   return min
 end
 
+# Moves all the particles a certain time
 def move(particles, time)
   particles.each do |p|
     p.move(time)
   end
 end
 
+# Prints each particle at a given time
 def print_next_state(particles, mode, second)
   file = File.open("particles.txt", mode)
-  file.write("#{N + 1 + 4}\n")
+  file.write("#{N + 1 + 4}\n") # 1 for the big particle, 4 for the invisible ones at the corners
   file.write("#{second}\n")
   particles.each do |particle|
     file.write("#{particle.x} #{particle.y} #{particle.vx} #{particle.vy} #{particle.radius}\n")
@@ -80,8 +84,10 @@ def print_next_state(particles, mode, second)
   file.close
 end
 
+# Returns the next frame of a certain time
 def next_frame(time)
-  return (time.round(1) - time > 0 ? time.round(1) : time.round(1) + 0.1).round(1)
+  △t = 0.1
+  return (time.round(1) - time > 0 ? time.round(1) : time.round(1) + △t).round(1)
 end
 
 # Constants
@@ -104,7 +110,6 @@ particles = generate_particles
 print_next_state(particles, 'w', 0)
 
 actual_time = 0
-△t = 0.1
 FRAMES.times do |i|
   nc = next_collision(particles)
 

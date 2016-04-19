@@ -1,12 +1,44 @@
 #!/usr/bin/env ruby
 
 class Collision
-  attr_reader :particle, :other_particle, :time
+  attr_reader :particle, :time
+
+  def initialize(particle, time)
+    @particle = particle
+    @time = time
+  end
+
+  def collide
+   raise 'This method should be overriden'
+  end
+end
+
+class HorizontalCollision < Collision
+  def initialize(particle, time)
+    super(particle, time)
+  end
+
+  def collide
+    @particle.vx *= -1
+  end
+end
+
+class VerticalCollision < Collision
+  def initialize(particle, time)
+    super(particle, time)
+  end
+
+  def collide
+    @particle.vy *= -1
+  end
+end
+
+class ParticlesCollision < Collision
+  attr_reader :other_particle
 
   def initialize(particle, other_particle, time)
-    @particle = particle
+    super(particle, time)
     @other_particle = other_particle
-    @time = time
   end
 
   def collide
@@ -23,34 +55,5 @@ class Collision
     particle.vy += jy / particle.mass
     other_particle.vx -= jx / other_particle.mass
     other_particle.vy -= jy / other_particle.mass
-  end
-
-  def to_s
-    "#{@particle} // #{@other_particle} // #{@time}"
-  end
-
-  def eql?(other)
-    puts "COMPARANDOO"
-    self.time == other.time
-  end
-end
-
-class HorizontalCollision < Collision
-  def initialize(particle, time)
-    super(particle, nil, time)
-  end
-
-  def collide
-    @particle.vx *= -1
-  end
-end
-
-class VerticalCollision < Collision
-  def initialize(particle, time)
-    super(particle, nil, time)
-  end
-
-  def collide
-    @particle.vy *= -1
   end
 end

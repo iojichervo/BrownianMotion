@@ -99,7 +99,7 @@ PARTICLES_RADIUS = 0.005
 PARTICLES_MASS = 1
 BIG_PARTICLE_RADIUS = 0.05
 BIG_PARTICLE_MASS = 100
-FRAMES = 1000
+FRAMES = 500
 
 # Particles amount
 #N = ARGV[0].to_i
@@ -110,7 +110,8 @@ particles = generate_particles
 print_next_state(particles, 'w', 0)
 
 actual_time = 0
-FRAMES.times do |i|
+i = 0
+while i < FRAMES do
   nc = next_collision(particles)
 
   if next_frame(actual_time) == next_frame(nc.time + actual_time) then
@@ -121,7 +122,9 @@ FRAMES.times do |i|
     next_frame = next_frame(actual_time)
     move(particles, next_frame - actual_time) # Must move △t or less
     actual_time = next_frame
-    print_next_state(particles, 'a', i + 1)
+
+    print_next_state(particles, 'a', actual_time)
+    i += 1
   end
 
 end

@@ -30,16 +30,18 @@ def next_collision(particles)
 
     # Next collision of particle with other particle
     ncp = nil
-    particle.neighbors.each do |neighbor|
-      σ = particle.radius + neighbor.radius
-      △r△r = (neighbor.x - particle.x)**2 + (neighbor.y - particle.y)**2
-      △v△v = (neighbor.vx - particle.vx)**2 + (neighbor.vy - particle.vy)**2
-      △v△r = (neighbor.vx - particle.vx)*(neighbor.x - particle.x) + (neighbor.vy - particle.vy)*(neighbor.y - particle.y)
-      d = △v△r**2 - △v△v * (△r△r - σ**2)
+    particles.each do |neighbor|
+      if neighbor.id != particle.id then
+        σ = particle.radius + neighbor.radius
+        △r△r = (neighbor.x - particle.x)**2 + (neighbor.y - particle.y)**2
+        △v△v = (neighbor.vx - particle.vx)**2 + (neighbor.vy - particle.vy)**2
+        △v△r = (neighbor.vx - particle.vx)*(neighbor.x - particle.x) + (neighbor.vy - particle.vy)*(neighbor.y - particle.y)
+        d = △v△r**2 - △v△v * (△r△r - σ**2)
 
-      if △v△r < 0 && d >= 0 then
-        tncp = - (△v△r + Math.sqrt(d)) / △v△v
-        ncp = Collision.new(particle, neighbor, tncp) if ncp == nil || tncp < ncp.time
+        if △v△r < 0 && d >= 0 then
+          tncp = - (△v△r + Math.sqrt(d)) / △v△v
+          ncp = Collision.new(particle, neighbor, tncp) if ncp == nil || tncp < ncp.time
+        end
       end
     end
 
@@ -64,11 +66,11 @@ def move(particles, time)
   end
 end
 
-def print_next_state(state, mode, second)
+def print_next_state(particles, mode, second)
   file = File.open("particles.txt", mode)
   file.write("#{N + 1}\n")
   file.write("#{second}\n")
-  state.particles.each do |particle|
+  particles.each do |particle|
     file.write("#{particle.x} #{particle.y} #{particle.vx} #{particle.vy} #{particle.radius}\n")
   end
   #file.write("#{LEFT_WALL} #{FLOOR_WALL} 0 0 0\n")
@@ -96,8 +98,7 @@ raise ArgumentError, "The amount of particles must be bigger than zero" if N <= 
 
 i = 0
 particles = generate_particles
-state = state(RIGHT_WALL, 4, 0.001, N, particles)
-print_next_state(state, 'w', i)
+print_next_state(particles, 'w', i)
 
 actual_time = 0
 △t = 0.1
@@ -112,10 +113,6 @@ while actual_time <= T do
     actual_time += △t
 
     i += 1
-    print_next_state(state, 'a', i) 
+    print_next_state(particles, 'a', i) 
   end
-
-  state.grid = {}
-  align_grid(state)
-  cell_index_method(state, 0.001, false)
 end

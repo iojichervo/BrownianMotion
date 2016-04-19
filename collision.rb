@@ -24,6 +24,15 @@ class Collision
     other_particle.vx -= jx / other_particle.mass
     other_particle.vy -= jy / other_particle.mass
   end
+
+  def to_s
+    "#{@particle} // #{@other_particle} // #{@time}"
+  end
+
+  def eql?(other)
+    puts "COMPARANDOO"
+    self.time == other.time
+  end
 end
 
 class HorizontalCollision < Collision

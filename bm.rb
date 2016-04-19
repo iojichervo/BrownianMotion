@@ -80,11 +80,8 @@ def print_next_state(particles, mode, second)
   file.close
 end
 
-def is_next_collision_in_this_frame?(nc, actual_time)
-  next_frame = (actual_time.round(1) - actual_time > 0 ? actual_time.round(1) : actual_time.round(1) + 0.1).round(1)
-  t = nc.time + actual_time
-  next_frame_collision = (t.round(1) - t > 0 ? t.round(1) : t.round(1) + 0.1).round(1)
-  return next_frame == next_frame_collision
+def next_frame(time)
+  return (time.round(1) - time > 0 ? time.round(1) : time.round(1) + 0.1).round(1)
 end
 
 # Constants
@@ -100,7 +97,7 @@ FRAMES = 1000
 
 # Particles amount
 #N = ARGV[0].to_i
-N = 10
+N = 100
 raise ArgumentError, "The amount of particles must be bigger than zero" if N <= 0
 
 particles = generate_particles
@@ -111,15 +108,14 @@ actual_time = 0
 FRAMES.times do |i|
   nc = next_collision(particles)
 
-  if is_next_collision_in_this_frame?(nc, actual_time) then
+  if next_frame(actual_time) == next_frame(nc.time + actual_time) then
     move(particles, nc.time)
     nc.collide
     actual_time += nc.time
   else
-    next_frame = (actual_time.round(1) - actual_time > 0 ? actual_time.round(1) : actual_time.round(1) + 0.1).round(1)
+    next_frame = next_frame(actual_time)
     move(particles, next_frame - actual_time) # Must move △t or less
-
-    actual_time = next_frame.round(1)
+    actual_time = next_frame
     print_next_state(particles, 'a', i + 1)
   end
 

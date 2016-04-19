@@ -89,30 +89,26 @@ PARTICLES_RADIUS = 0.005
 PARTICLES_MASS = 1
 BIG_PARTICLE_RADIUS = 0.05
 BIG_PARTICLE_MASS = 100
+FRAMES = 1000
 
 # Particles amount
 #N = ARGV[0].to_i
-N = 10
-T = 15
+N = 50
 raise ArgumentError, "The amount of particles must be bigger than zero" if N <= 0
 
-i = 0
 particles = generate_particles
-print_next_state(particles, 'w', i)
+print_next_state(particles, 'w', 0)
 
 actual_time = 0
 △t = 0.1
-while actual_time <= T do
+FRAMES.times do |i|
   nc = next_collision(particles)
+  move(particles, nc.time)
+  nc.collide
+  actual_time += nc.time
 
-  if nc.time <= △t then
-    nc.collide
-
-  else
-    move(particles, △t)
-    actual_time += △t
-
-    i += 1
-    print_next_state(particles, 'a', i) 
+  if △t < actual_time then
+    print_next_state(particles, 'a', i + 1)
+    actual_time = actual_time - △t
   end
 end

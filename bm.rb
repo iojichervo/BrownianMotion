@@ -75,12 +75,30 @@ def print_next_state(particles, mode, second)
   file.write("#{N + 1 + 4}\n") # 1 for the big particle, 4 for the invisible ones at the corners
   file.write("#{second}\n")
   particles.each do |particle|
-    file.write("#{particle.x} #{particle.y} #{particle.vx} #{particle.vy} #{particle.radius}\n")
+    red = 0
+    blue = 255
+    green = 0
+    if particle.radius == BIG_PARTICLE_RADIUS then
+      red = 255
+      blue = 0
+    end
+    file.write("#{particle.x} #{particle.y} #{particle.vx} #{particle.vy} #{particle.radius} #{red} #{green} #{blue}\n")
   end
-  file.write("#{LEFT_WALL} #{FLOOR_WALL} 0 0 0\n")
-  file.write("#{LEFT_WALL} #{ROOF_WALL} 0 0 0\n")
-  file.write("#{RIGHT_WALL} #{FLOOR_WALL} 0 0 0\n")
-  file.write("#{RIGHT_WALL} #{ROOF_WALL} 0 0 0\n")
+  file.write("#{LEFT_WALL} #{FLOOR_WALL} 0 0 0 0 0 0\n")
+  file.write("#{LEFT_WALL} #{ROOF_WALL} 0 0 0 0 0 0\n")
+  file.write("#{RIGHT_WALL} #{FLOOR_WALL} 0 0 0 0 0 0\n")
+  file.write("#{RIGHT_WALL} #{ROOF_WALL} 0 0 0 0 0 0\n")
+  file.close
+
+  file = File.open("main_particle.txt", mode)
+  file.write("#{1 + 4}\n") # Big particles plus 4 in the corners
+  file.write("#{second}\n")
+  particle = particles.first
+  file.write("#{particle.x} #{particle.y} #{particle.vx} #{particle.vy} #{particle.radius} 255 0 0\n")
+  file.write("#{LEFT_WALL} #{FLOOR_WALL} 0 0 0 0 0 0\n")
+  file.write("#{LEFT_WALL} #{ROOF_WALL} 0 0 0 0 0 0\n")
+  file.write("#{RIGHT_WALL} #{FLOOR_WALL} 0 0 0 0 0 0\n")
+  file.write("#{RIGHT_WALL} #{ROOF_WALL} 0 0 0 0 0 0\n")
   file.close
 end
 
@@ -99,11 +117,10 @@ PARTICLES_RADIUS = 0.005
 PARTICLES_MASS = 1
 BIG_PARTICLE_RADIUS = 0.05
 BIG_PARTICLE_MASS = 100
-FRAMES = 500
+FRAMES = 1000
 
 # Particles amount
-#N = ARGV[0].to_i
-N = 100
+N = ARGV[0].to_i
 raise ArgumentError, "The amount of particles must be bigger than zero" if N <= 0
 
 particles = generate_particles
@@ -157,7 +174,12 @@ times_collisions.each do |time|
   distribution[destination] += 1
 end
 
-puts "Distribution of collisions: #{distribution}"
+distribution = distribution.sort.to_h
+puts "Distribution of collisions:"
+distribution.each do |key, value|
+  print "#{key} #{value}"
+  puts ""
+end
 
 step = 0.01
 distribution = Hash.new(0)
@@ -166,4 +188,9 @@ velocities.each do |v|
   distribution[destination] += 1
 end
 
-puts "Distribution of velocities: #{distribution}"
+distribution = distribution.sort.to_h
+puts "Distribution of velocities:"
+distribution.each do |key, value|
+  print "#{key} #{value}"
+  puts ""
+end

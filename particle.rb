@@ -53,4 +53,8 @@ class Particle
     y = @position.y + @vy * time
     @position = Point.new(x, y)
   end
+
+  def speed
+    Math.sqrt(vx**2 + vy**2)
+  end
 end

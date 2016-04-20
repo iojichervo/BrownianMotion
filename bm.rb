@@ -111,6 +111,10 @@ print_next_state(particles, 'w', 0)
 
 actual_time = 0
 i = 0
+
+# Measurements
+times_collisions = []
+velocities = []
 while i < FRAMES do
   nc = next_collision(particles)
 
@@ -118,6 +122,9 @@ while i < FRAMES do
     move(particles, nc.time)
     nc.collide
     actual_time += nc.time
+
+    # Measurements
+    times_collisions.push(nc.time)
   else
     next_frame = next_frame(actual_time)
     move(particles, next_frame - actual_time) # Must move △t or less
@@ -125,6 +132,38 @@ while i < FRAMES do
 
     print_next_state(particles, 'a', actual_time)
     i += 1
+
+    # Measurements
+    if actual_time > (2.0/3.0) * FRAMES * 0.1 then
+      particles.each do |p|
+        velocities.push(p.speed)
+      end
+    end
   end
 
 end
+
+# Measurements
+sum_times_collisions = times_collisions.inject(:+)
+amount_collisions = times_collisions.size
+
+puts "Frequency of collisions: #{amount_collisions / actual_time}"
+puts "Average time of collsions: #{(sum_times_collisions / amount_collisions).round(3)}"
+
+step = 0.005
+distribution = Hash.new(0)
+times_collisions.each do |time|
+  destination = ((time.round(3)*100) - ((time.round(3)*100) % (step*100))) / 100
+  distribution[destination] += 1
+end
+
+puts "Distribution of collisions: #{distribution}"
+
+step = 0.01
+distribution = Hash.new(0)
+velocities.each do |v|
+  destination = ((v.round(3)*100) - ((v.round(3)*100) % (step*100))) / 100
+  distribution[destination] += 1
+end
+
+puts "Distribution of velocities: #{distribution}"

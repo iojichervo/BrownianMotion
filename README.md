@@ -11,6 +11,9 @@ N is the amount of small particles
 
 Output in .xyz format to be used in [OVITO](http://www.ovito.org/)
 
+![example 1](http://i.imgur.com/7BQjuYH.gif)
+![example 2](http://i.imgur.com/bMMvvgW.gif)
+
 ## Contributing
 
 1. Fork it!
